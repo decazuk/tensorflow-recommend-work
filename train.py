@@ -13,8 +13,8 @@ u_num = 122979
 i_num = 210420
 
 batch_size = 1000
-dims = 5
-max_epochs = 50
+dims = 15
+max_epochs = 150
 
 place_device = "/cpu:0"
 
@@ -117,7 +117,7 @@ with tf.Session() as sess:
         pred_batch = clip(pred_batch)
         errors.append(np.power(pred_batch - work_times, 2))
         if i % samples_per_batch == 0:
-            train_err = np.sqrt(np.mean(errors))
+            train_err = np.sqrt(np.nanmean(errors))
             test_err2 = np.array([])
             for users, items, work_times in iter_test:
                 pred_batch = sess.run(infer, feed_dict={user_batch: users,
@@ -126,7 +126,7 @@ with tf.Session() as sess:
                 test_err2 = np.append(test_err2, np.power(pred_batch - work_times, 2))
             end = time.time()
 
-            print("%02d\t%.3f\t\t%.3f\t\t%.3f secs" % (i // samples_per_batch, train_err, np.sqrt(np.mean(test_err2)), end - start))
+            print("%02d\t%.3f\t\t%.3f\t\t%.3f secs" % (i // samples_per_batch, train_err, np.sqrt(np.nanmean(test_err2)), end - start))
             start = end
     saver.save(sess, './save/')
 
